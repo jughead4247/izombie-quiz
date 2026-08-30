@@ -573,14 +573,14 @@ function showQuestion() {
         button.textContent = answer[0];
 
 
-        /*
-         * Restore previously selected answer
-         * when returning to this question.
-         */
+        /* Restore previously selected answer */
         if (userAnswers[currentQuestion] === index) {
 
             button.classList.add("selected");
-            button.classList.add("selected-answer");
+
+            button.style.backgroundColor = "#444";
+            button.style.borderColor = "#fff";
+            button.style.color = "#fff";
 
         }
 
@@ -597,16 +597,13 @@ function showQuestion() {
     });
 
 
-    /*
-     * Back button
-     */
+    /* Back button */
+
     backButton.disabled = currentQuestion === 0;
 
 
-    /*
-     * Final question:
-     * Submit replaces Next.
-     */
+    /* Final question */
+
     if (currentQuestion === questions.length - 1) {
 
         nextButton.classList.add("hidden");
@@ -639,42 +636,47 @@ function showQuestion() {
 }
 
 
+
 function selectAnswer(answerIndex) {
 
     clearTimeout(autoAdvanceTimer);
 
 
-    /*
-     * Store the selected answer.
-     */
+    /* Save answer */
+
     userAnswers[currentQuestion] = answerIndex;
 
 
-    /*
-     * Remove previous highlighting.
-     */
+    /* Highlight selected answer */
+
     const answerButtons =
         answersContainer.querySelectorAll(".answer");
+
 
     answerButtons.forEach((button, index) => {
 
         button.classList.remove("selected");
-        button.classList.remove("selected-answer");
+
+        button.style.backgroundColor = "";
+        button.style.borderColor = "";
+        button.style.color = "";
+
 
         if (index === answerIndex) {
 
             button.classList.add("selected");
-            button.classList.add("selected-answer");
+
+            button.style.backgroundColor = "#444";
+            button.style.borderColor = "#fff";
+            button.style.color = "#fff";
 
         }
 
     });
 
 
-    /*
-     * If this is the final question,
-     * update Submit instead of auto-advancing.
-     */
+    /* Final question */
+
     if (currentQuestion === questions.length - 1) {
 
         if (allQuestionsAnswered()) {
@@ -685,12 +687,12 @@ function selectAnswer(answerIndex) {
         }
 
         return;
+
     }
 
 
-    /*
-     * Automatically move to the next question.
-     */
+    /* Automatic advancement */
+
     autoAdvanceTimer = setTimeout(() => {
 
         goNext();
