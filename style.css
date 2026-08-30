@@ -826,7 +826,8 @@ h2 {
 
 /* SELECTED ANSWER */
 
-.answer-btn.selected {
+.answer.selected 
+.answer.selected-answer{
 
     background: #292929;
 
