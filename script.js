@@ -569,19 +569,28 @@ function showQuestion() {
         const button = document.createElement("button");
 
         button.className = "answer";
+
         button.textContent = answer[0];
 
+
         /*
-         * If this question was already answered,
-         * automatically highlight the previous answer.
+         * Restore previously selected answer
+         * when returning to this question.
          */
         if (userAnswers[currentQuestion] === index) {
+
             button.classList.add("selected");
+            button.classList.add("selected-answer");
+
         }
 
+
         button.addEventListener("click", () => {
+
             selectAnswer(index);
+
         });
+
 
         answersContainer.appendChild(button);
 
@@ -596,12 +605,14 @@ function showQuestion() {
 
     /*
      * Final question:
-     * Hide Next and show Submit.
+     * Submit replaces Next.
      */
     if (currentQuestion === questions.length - 1) {
 
         nextButton.classList.add("hidden");
+
         submitButton.classList.remove("hidden");
+
 
         if (allQuestionsAnswered()) {
 
@@ -618,11 +629,13 @@ function showQuestion() {
     } else {
 
         submitButton.classList.add("hidden");
+
         nextButton.classList.remove("hidden");
 
         nextButton.disabled = false;
-        nextButton.textContent = "Next →";
+
     }
+
 }
 
 
@@ -630,14 +643,15 @@ function selectAnswer(answerIndex) {
 
     clearTimeout(autoAdvanceTimer);
 
+
     /*
      * Store the selected answer.
-     * Nothing is added to the score yet.
      */
     userAnswers[currentQuestion] = answerIndex;
 
+
     /*
-     * Highlight selected answer immediately.
+     * Remove previous highlighting.
      */
     const answerButtons =
         answersContainer.querySelectorAll(".answer");
@@ -645,16 +659,21 @@ function selectAnswer(answerIndex) {
     answerButtons.forEach((button, index) => {
 
         button.classList.remove("selected");
+        button.classList.remove("selected-answer");
 
         if (index === answerIndex) {
+
             button.classList.add("selected");
+            button.classList.add("selected-answer");
+
         }
 
     });
 
 
     /*
-     * Update Submit button if this is the final question.
+     * If this is the final question,
+     * update Submit instead of auto-advancing.
      */
     if (currentQuestion === questions.length - 1) {
 
@@ -670,15 +689,15 @@ function selectAnswer(answerIndex) {
 
 
     /*
-     * Automatically advance after a short delay.
+     * Automatically move to the next question.
      */
     autoAdvanceTimer = setTimeout(() => {
 
         goNext();
 
-    }, 350);
-}
+    }, 150);
 
+}
 
 function goNext() {
 
