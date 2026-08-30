@@ -1,5 +1,3 @@
-const homeInfo = document.getElementById("home-info");
-
 const questions = [
 
     {
@@ -494,14 +492,15 @@ const questions = [
 
 ];
 
-
 let currentQuestion = 0;
 let score = 0;
-
+let userAnswers = new Array(questions.length).fill(null);
+let autoAdvanceTimer = null;
 
 const startScreen = document.getElementById("start-screen");
 const quizScreen = document.getElementById("quiz-screen");
 const resultScreen = document.getElementById("result-screen");
+const homeInfo = document.getElementById("home-info");
 
 const startButton = document.getElementById("start-btn");
 const restartButton = document.getElementById("restart-btn");
@@ -513,19 +512,30 @@ const questionText = document.getElementById("question");
 const answersContainer = document.getElementById("answers");
 const progressBar = document.getElementById("progress-bar");
 
+const backButton = document.getElementById("back-btn");
+const nextButton = document.getElementById("next-btn");
+const submitButton = document.getElementById("submit-btn");
+
 
 startButton.addEventListener("click", startQuiz);
 restartButton.addEventListener("click", restartQuiz);
 shareButton.addEventListener("click", shareResult);
 challengeButton.addEventListener("click", shareResult);
 
+backButton.addEventListener("click", goBack);
+nextButton.addEventListener("click", goNext);
+submitButton.addEventListener("click", submitQuiz);
+
 
 function startQuiz() {
 
-    homeInfo.classList.add("hidden");
+    clearTimeout(autoAdvanceTimer);
 
     currentQuestion = 0;
     score = 0;
+    userAnswers = new Array(questions.length).fill(null);
+
+    homeInfo.classList.add("hidden");
 
     startScreen.classList.add("hidden");
     resultScreen.classList.add("hidden");
@@ -536,6 +546,8 @@ function startQuiz() {
 
 
 function showQuestion() {
+
+    clearTimeout(autoAdvanceTimer);
 
     const current = questions[currentQuestion];
 
@@ -552,49 +564,213 @@ function showQuestion() {
     progressBar.style.width = `${progress}%`;
 
 
-    current.answers.forEach((answer) => {
+    current.answers.forEach((answer, index) => {
 
         const button = document.createElement("button");
 
         button.className = "answer";
-
         button.textContent = answer[0];
 
+        /*
+         * If this question was already answered,
+         * automatically highlight the previous answer.
+         */
+        if (userAnswers[currentQuestion] === index) {
+            button.classList.add("selected");
+        }
+
         button.addEventListener("click", () => {
-            selectAnswer(answer[1]);
+            selectAnswer(index);
         });
 
         answersContainer.appendChild(button);
 
     });
-}
 
 
-function selectAnswer(points) {
+    /*
+     * Back button
+     */
+    backButton.disabled = currentQuestion === 0;
 
-    score += points;
 
-    currentQuestion++;
+    /*
+     * Final question:
+     * Hide Next and show Submit.
+     */
+    if (currentQuestion === questions.length - 1) {
 
-    if (currentQuestion < questions.length) {
+        nextButton.classList.add("hidden");
+        submitButton.classList.remove("hidden");
 
-        showQuestion();
+        if (allQuestionsAnswered()) {
+
+            submitButton.disabled = false;
+            submitButton.textContent = "SUBMIT";
+
+        } else {
+
+            submitButton.disabled = true;
+            submitButton.textContent = "Answer All Questions";
+
+        }
 
     } else {
 
-        showResult();
+        submitButton.classList.add("hidden");
+        nextButton.classList.remove("hidden");
+
+        nextButton.disabled = false;
+        nextButton.textContent = "Next →";
+    }
+}
+
+
+function selectAnswer(answerIndex) {
+
+    clearTimeout(autoAdvanceTimer);
+
+    /*
+     * Store the selected answer.
+     * Nothing is added to the score yet.
+     */
+    userAnswers[currentQuestion] = answerIndex;
+
+    /*
+     * Highlight selected answer immediately.
+     */
+    const answerButtons =
+        answersContainer.querySelectorAll(".answer");
+
+    answerButtons.forEach((button, index) => {
+
+        button.classList.remove("selected");
+
+        if (index === answerIndex) {
+            button.classList.add("selected");
+        }
+
+    });
+
+
+    /*
+     * Update Submit button if this is the final question.
+     */
+    if (currentQuestion === questions.length - 1) {
+
+        if (allQuestionsAnswered()) {
+
+            submitButton.disabled = false;
+            submitButton.textContent = "SUBMIT";
+
+        }
+
+        return;
+    }
+
+
+    /*
+     * Automatically advance after a short delay.
+     */
+    autoAdvanceTimer = setTimeout(() => {
+
+        goNext();
+
+    }, 350);
+}
+
+
+function goNext() {
+
+    clearTimeout(autoAdvanceTimer);
+
+    /*
+     * Do not move forward if the current question
+     * has not been answered.
+     */
+    if (userAnswers[currentQuestion] === null) {
+        return;
+    }
+
+    if (currentQuestion < questions.length - 1) {
+
+        currentQuestion++;
+
+        showQuestion();
 
     }
 }
 
 
+function goBack() {
+
+    clearTimeout(autoAdvanceTimer);
+
+    if (currentQuestion > 0) {
+
+        currentQuestion--;
+
+        showQuestion();
+
+    }
+}
+
+
+function allQuestionsAnswered() {
+
+    return userAnswers.every(
+        answer => answer !== null
+    );
+}
+
+
+function submitQuiz() {
+
+    clearTimeout(autoAdvanceTimer);
+
+    /*
+     * Safety check.
+     */
+    if (!allQuestionsAnswered()) {
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Answer All Questions";
+
+        return;
+    }
+
+
+    /*
+     * Calculate score ONLY once, when submitting.
+     */
+    score = 0;
+
+    questions.forEach((question, questionIndex) => {
+
+        const selectedAnswer =
+            userAnswers[questionIndex];
+
+        if (
+            selectedAnswer !== null &&
+            question.answers[selectedAnswer][1] === 1
+        ) {
+
+            score++;
+
+        }
+
+    });
+
+    showResult();
+}
+
+
 function showResult() {
 
-    homeInfo.classList.remove("hidden");
-
     quizScreen.classList.add("hidden");
-
     resultScreen.classList.remove("hidden");
+
+    homeInfo.classList.remove("hidden");
 
     document.getElementById("final-score").textContent = score;
 
@@ -690,13 +866,24 @@ function showResult() {
 
 function restartQuiz() {
 
+    clearTimeout(autoAdvanceTimer);
+
+    currentQuestion = 0;
+    score = 0;
+    userAnswers = new Array(questions.length).fill(null);
+
     resultScreen.classList.add("hidden");
+    quizScreen.classList.add("hidden");
 
     startScreen.classList.remove("hidden");
-
     homeInfo.classList.remove("hidden");
 
     progressBar.style.width = "0%";
+
+    submitButton.classList.add("hidden");
+    nextButton.classList.remove("hidden");
+
+    backButton.disabled = true;
 }
 
 
