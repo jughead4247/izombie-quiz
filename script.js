@@ -471,6 +471,16 @@ const questions = [
     },
 
     {
+    question: "Who was known as “the Candyman” in iZombie?",
+    answers: [
+        ["Stacey Boss", 0],
+        ["Don Eberhard", 0],
+        ["Blaine DeBeers", 0],
+        ["Julien Dupont", 1]
+    ]
+},
+
+    {
         question: "What was the name of Liv Moore’s mother in iZombie?",
         answers: [
             ["Rita Moore", 0],
