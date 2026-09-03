@@ -562,7 +562,7 @@ function showQuestion() {
     const current = questions[currentQuestion];
 
     questionNumber.textContent =
-        `Question ${currentQuestion + 1} of ${questions.length};
+        `Question ${currentQuestion + 1} of ${questions.length}';
 
     questionText.textContent = current.question;
 
@@ -571,7 +571,7 @@ function showQuestion() {
     const progress =
         ((currentQuestion + 1) / questions.length) * 100;
 
-    progressBar.style.width = `${progress}%;
+    progressBar.style.width = `${progress}%';
 
 
     current.answers.forEach((answer, index) => {
