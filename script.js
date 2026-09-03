@@ -471,14 +471,14 @@ const questions = [
     },
 
     {
-    question: "Who was known as “the Candyman” in iZombie?",
-    answers: [
-        ["Stacey Boss", 0],
-        ["Don Eberhard", 0],
-        ["Blaine DeBeers", 0],
-        ["Julien Dupont", 1]
-    ]
-},
+        question: "Who was known as “the Candyman” in iZombie?",
+        answers: [
+            ["Stacey Boss", 0],
+            ["Don Eberhard", 0],
+            ["Blaine DeBeers", 0],
+            ["Julien Dupont", 1]
+        ]
+    },
 
     {
         question: "What was the name of Liv Moore’s mother in iZombie?",
@@ -502,25 +502,30 @@ const questions = [
 
 ];
 
+
 let currentQuestion = 0;
 let score = 0;
 let userAnswers = new Array(questions.length).fill(null);
 let autoAdvanceTimer = null;
+
 
 const startScreen = document.getElementById("start-screen");
 const quizScreen = document.getElementById("quiz-screen");
 const resultScreen = document.getElementById("result-screen");
 const homeInfo = document.getElementById("home-info");
 
+
 const startButton = document.getElementById("start-btn");
 const restartButton = document.getElementById("restart-btn");
 const shareButton = document.getElementById("share-btn");
 const challengeButton = document.getElementById("challenge-btn");
 
+
 const questionNumber = document.getElementById("question-number");
 const questionText = document.getElementById("question");
 const answersContainer = document.getElementById("answers");
 const progressBar = document.getElementById("progress-bar");
+
 
 const backButton = document.getElementById("back-btn");
 const nextButton = document.getElementById("next-btn");
@@ -562,7 +567,7 @@ function showQuestion() {
     const current = questions[currentQuestion];
 
     questionNumber.textContent =
-        `Question ${currentQuestion + 1} of ${questions.length}';
+        `Question ${currentQuestion + 1} of ${questions.length}`;
 
     questionText.textContent = current.question;
 
@@ -572,7 +577,7 @@ function showQuestion() {
         ((currentQuestion + 1) / questions.length) * 100;
 
     progressBar.style.width =
-        `${progress}%';
+        `${progress}%`;
 
 
     current.answers.forEach((answer, index) => {
@@ -585,6 +590,7 @@ function showQuestion() {
 
 
         /* Restore previously selected answer */
+
         if (userAnswers[currentQuestion] === index) {
 
             button.classList.add("selected");
@@ -645,7 +651,6 @@ function showQuestion() {
     }
 
 }
-
 
 
 function selectAnswer(answerIndex) {
@@ -712,17 +717,23 @@ function selectAnswer(answerIndex) {
 
 }
 
+
 function goNext() {
 
     clearTimeout(autoAdvanceTimer);
+
 
     /*
      * Do not move forward if the current question
      * has not been answered.
      */
+
     if (userAnswers[currentQuestion] === null) {
+
         return;
+
     }
+
 
     if (currentQuestion < questions.length - 1) {
 
@@ -731,12 +742,14 @@ function goNext() {
         showQuestion();
 
     }
+
 }
 
 
 function goBack() {
 
     clearTimeout(autoAdvanceTimer);
+
 
     if (currentQuestion > 0) {
 
@@ -745,6 +758,7 @@ function goBack() {
         showQuestion();
 
     }
+
 }
 
 
@@ -753,6 +767,7 @@ function allQuestionsAnswered() {
     return userAnswers.every(
         answer => answer !== null
     );
+
 }
 
 
@@ -760,27 +775,33 @@ function submitQuiz() {
 
     clearTimeout(autoAdvanceTimer);
 
+
     /*
      * Safety check.
      */
+
     if (!allQuestionsAnswered()) {
 
         submitButton.disabled = true;
         submitButton.textContent = "Answer All Questions";
 
         return;
+
     }
 
 
     /*
      * Calculate score ONLY once, when submitting.
      */
+
     score = 0;
+
 
     questions.forEach((question, questionIndex) => {
 
         const selectedAnswer =
             userAnswers[questionIndex];
+
 
         if (
             selectedAnswer !== null &&
@@ -793,7 +814,9 @@ function submitQuiz() {
 
     });
 
+
     showResult();
+
 }
 
 
@@ -803,6 +826,7 @@ function showResult() {
     resultScreen.classList.remove("hidden");
 
     homeInfo.classList.remove("hidden");
+
 
     document.getElementById("final-score").textContent = score;
 
@@ -878,10 +902,12 @@ function showResult() {
         knowledge = "Ultimate Fan";
 
         icon = "👑";
+
     }
 
 
-    document.getElementById("result-title").textContent = title;
+    document.getElementById("result-title").textContent =
+        title;
 
     document.getElementById("result-description").textContent =
         description;
@@ -893,6 +919,7 @@ function showResult() {
         icon;
 
     progressBar.style.width = "100%";
+
 }
 
 
@@ -916,6 +943,7 @@ function restartQuiz() {
     nextButton.classList.remove("hidden");
 
     backButton.disabled = true;
+
 }
 
 
@@ -976,29 +1004,40 @@ async function shareResult() {
 
 }
 
+
 // ===============================
 // GLOBAL SITE MENU
 // ===============================
 
-const menuToggle = document.getElementById("menu-toggle");
-const siteMenu = document.getElementById("site-menu");
+const menuToggle =
+    document.getElementById("menu-toggle");
+
+const siteMenu =
+    document.getElementById("site-menu");
+
 
 if (menuToggle && siteMenu) {
 
+
     // OPEN / CLOSE WITH HAMBURGER
+
     menuToggle.addEventListener("click", function (event) {
 
         event.stopPropagation();
 
+
         const isOpen =
             menuToggle.getAttribute("aria-expanded") === "true";
 
+
         siteMenu.hidden = isOpen;
+
 
         menuToggle.setAttribute(
             "aria-expanded",
             String(!isOpen)
         );
+
 
         menuToggle.setAttribute(
             "aria-label",
@@ -1011,6 +1050,7 @@ if (menuToggle && siteMenu) {
 
 
     // CLOSE WHEN CLICKING OUTSIDE
+
     document.addEventListener("click", function (event) {
 
         if (
@@ -1021,10 +1061,12 @@ if (menuToggle && siteMenu) {
 
             siteMenu.hidden = true;
 
+
             menuToggle.setAttribute(
                 "aria-expanded",
                 "false"
             );
+
 
             menuToggle.setAttribute(
                 "aria-label",
@@ -1037,16 +1079,19 @@ if (menuToggle && siteMenu) {
 
 
     // CLOSE AFTER CLICKING A MENU LINK
+
     siteMenu.querySelectorAll("a").forEach(function (link) {
 
         link.addEventListener("click", function () {
 
             siteMenu.hidden = true;
 
+
             menuToggle.setAttribute(
                 "aria-expanded",
                 "false"
             );
+
 
             menuToggle.setAttribute(
                 "aria-label",
@@ -1058,4 +1103,3 @@ if (menuToggle && siteMenu) {
     });
 
 }
-
